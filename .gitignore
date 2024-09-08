@@ -136,6 +136,8 @@ dist
 .pnp.*
 
 ### VisualStudioCode ###
+**/.vscode/
+**/cache/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
