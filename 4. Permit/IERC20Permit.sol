@@ -15,5 +15,5 @@ interface IERC20Permit {
 
     function nonces(address owner) external view returns(uint256);
 
-    function DOMAIN_SEPARATOR(address owner) external view returns(bytes32);
+    function DOMAIN_SEPARATOR() external view returns(bytes32);
 }
