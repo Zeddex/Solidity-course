@@ -5,9 +5,8 @@ pragma solidity ^0.8.26;
 import "./AccessControl.sol";
 
 contract AccessDemo is AccessControl {
-    //keccak256 hashed roles
-    bytes32 public constant WITHDRAWER_ROLE = 0x10dac8c06a04bec0b551627dad28bc00d6516b0caacd1c7b345fcdb5211334e4;
-    bytes32 public constant ADMIN_ROLE = 0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775;
+    bytes32 public constant WITHDRAWER_ROLE = keccak256("WITHDRAWER_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     bool isPaused = false;
 

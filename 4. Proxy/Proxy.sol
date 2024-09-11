@@ -7,7 +7,7 @@ library StorageSlot {
         address value;
     }
 
-    function getAddressSlot(bytes32 _slot) internal pure returns (AddressSlot storage ret)
+    function getAddressSlot(bytes32 _slot) internal pure returns(AddressSlot storage ret)
     {
         assembly {
             ret.slot := _slot
@@ -25,7 +25,7 @@ contract Proxy {
         _setAdmin(msg.sender);
     }
 
-    modifier checkAdmin() {
+    modifier isAdmin {
         if (msg.sender == _getAdmin()) {
             _;
         } else {
@@ -33,21 +33,21 @@ contract Proxy {
         }
     }
 
-    function upgradeTo(address _implementation) external checkAdmin {
+    function upgradeTo(address _implementation) external isAdmin {
         _setImplementation(_implementation);
     }
 
-    function changeAdmin(address _admin) external checkAdmin {
+    function changeAdmin(address _admin) external isAdmin {
         _setAdmin(_admin);
+    }
+
+    function _getAdmin() private view returns(address) {
+        return StorageSlot.getAddressSlot(ADMIN_SLOT).value;
     }
 
     function _setAdmin(address _admin) private {
         require(_admin != address(0), "admin is zero address!");
         StorageSlot.getAddressSlot(ADMIN_SLOT).value = _admin;
-    }
-
-    function _getAdmin() private view returns(address) {
-        return StorageSlot.getAddressSlot(ADMIN_SLOT).value;
     }
 
     function _setImplementation(address _implementation) private {
@@ -87,28 +87,5 @@ contract Proxy {
 
     receive() external payable {
         _fallback();
-    }
-}
-
-contract Version1 {
-    uint256 public count;
-
-    // 0x371303c0
-    function inc() external {
-        count += 1;
-    }
-}
-
-contract Version2 {
-    uint256 public count;
-
-    // 0x371303c0
-    function inc() external {
-        count += 1;
-    }
-
-    // 0xb3bcfa82
-    function dec() external {
-        count -= 1;
     }
 }
