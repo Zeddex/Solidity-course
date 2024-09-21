@@ -31,7 +31,7 @@ contract CustomShop {
         _;
     }
 
-    /// @notice Receive ether and send tokens back 
+    /// @notice Receive ether and send tokens back
     receive() external payable {
         // 1 token = 1 wei
         uint256 tokensToBuy = msg.value;

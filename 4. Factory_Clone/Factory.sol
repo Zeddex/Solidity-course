@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT 
-
 pragma solidity ^0.8.26;
 
 contract Factory {
@@ -28,12 +27,12 @@ contract Factory {
 
 contract Product {
     address public owner;
+    string public productName;
     address public productAddress;
-    string public name;
 
     constructor(string memory _name) {
-        name = _name;
         owner = msg.sender;
+        productName = _name;
         productAddress = address(this);
     }
 }

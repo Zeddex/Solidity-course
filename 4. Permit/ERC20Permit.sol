@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT 
-
 pragma solidity ^0.8.26;
 
 import "./IERC20Permit.sol";
@@ -49,19 +48,19 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
         _approve(owner, spender, value);    
     }
 
-    function nonces(address owner) external view returns(uint256) {
-      return _nonces[owner].current();
-    }
-
-    function DOMAIN_SEPARATOR() external view returns(bytes32) {
-      return _domainSeparatorV4();
-    }
-
     function _useNonce(address owner) internal virtual returns(uint256 current) {
       Counters.Counter storage nonce = _nonces[owner];
 
       current = nonce.current();
 
       nonce.increment();
+    }
+
+    function nonces(address owner) external view returns(uint256) {
+      return _nonces[owner].current();
+    }
+
+    function DOMAIN_SEPARATOR() external view returns(bytes32) {
+      return _domainSeparatorV4();
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT 
-
 pragma solidity ^0.8.26;
 
+/// @title Get creation byte code with specified implementation address
 library ERC6551BytecodelLib {
     function getCreationCode(address _implementation) internal pure returns(bytes memory) {
         return
@@ -14,11 +14,12 @@ library ERC6551BytecodelLib {
 }
 
 contract CloneFactory {
-    address public lastDeplyedAddr;
+    address public lastDeployedAddr;
 
     event ProxyCreated(address target);
 
-    function makeClone(address _implementation) external {
+    /// @notice Create a new clone
+    function createClone(address _implementation) external {
         bytes memory code = ERC6551BytecodelLib.getCreationCode(_implementation);
 
         address target;
@@ -29,14 +30,15 @@ contract CloneFactory {
 
         emit ProxyCreated(target);
 
-        lastDeplyedAddr = target;
+        lastDeployedAddr = target;
     }
 }
 
+/// @title Main implementation
 contract Implementation {
-    uint256 public count;
+    int256 public count;
 
-    function set(uint256 _count) external {
+    function set(int256 _count) external {
         count = _count;
     }
 

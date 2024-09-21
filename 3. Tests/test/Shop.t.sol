@@ -1,10 +1,11 @@
-// SPDX-License-Identifier: UNLICENSED 
-
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
-import {Test, console} from "../lib/forge-std/src/Test.sol";
-import {CustomShop} from "../src/CustomShop.sol";
-import {IERC20} from "../src/IERC20.sol";
+//import { Test, console } from "forge-std/Test.sol";
+import { Test, console } from "../lib/forge-std/src/Test.sol";
+
+import { CustomShop } from "../src/CustomShop.sol";
+import { IERC20 } from "../src/IERC20.sol";
 
 contract ShopTest is Test {
     CustomShop public shop;
