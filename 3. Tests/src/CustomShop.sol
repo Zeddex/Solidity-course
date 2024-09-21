@@ -10,6 +10,7 @@ import "./CustomToken.sol";
 contract CustomShop {
     IERC20 public token;
     address public owner;
+    mapping(address => uint256) public payments;
 
     /// @notice Emitted when tokens are bought
     /// @param _buyer buyer's address
@@ -21,39 +22,49 @@ contract CustomShop {
     /// @param _amount amounts of tokens
     event Sold(address indexed _seller, uint256 _amount);
 
-    constructor() {
-        token = new CustomToken(address(this));
-        owner = msg.sender;
-    }
+    error IncorrectAmount(uint256);
+    error OutOfTokens();
+    error NotEnoughFunds();
 
     modifier onlyOwner {
         require(msg.sender == owner, "Not an owner!");
         _;
     }
 
-    /// @notice Receive ether and send tokens back
+    constructor() {
+        token = new CustomToken(address(this));
+        owner = msg.sender;
+    }
+
+    /// Receive ether and send tokens back
+    /// @notice 1 token = 1 wei
     receive() external payable {
-        // 1 token = 1 wei
-        uint256 tokensToBuy = msg.value;
+        if (msg.value == 0) {
+            revert OutOfTokens();
+        }
 
-        require(tokensToBuy > 0, "Not enough funds!");
-        require(token.balanceOf(address(this)) >= tokensToBuy, "Not enough tokens!");
+        if (token.balanceOf(address(this)) < msg.value) {
+            revert OutOfTokens();
+        }
 
-        token.transfer(msg.sender, tokensToBuy);
+        token.transfer(msg.sender, msg.value);
 
-        emit Bought(msg.sender, tokensToBuy);
+        payments[msg.sender] = msg.value;
+
+        emit Bought(msg.sender, msg.value);
     }
 
     function tokenBalance(address account) public view returns(uint256) {
         return token.balanceOf(account);
     }
 
-    /// @notice Sell tokens from the wallet
+    /// Sell tokens from the wallet
     /// @param _amountToSell amounts of tokens to sell
     function sell(uint256 _amountToSell) external {
-        require(_amountToSell > 0 &&
-        token.balanceOf(msg.sender) >= _amountToSell, 
-        "Incorrect amount!");
+        if (_amountToSell < 0  &&
+        token.balanceOf(msg.sender) < _amountToSell) {
+            revert IncorrectAmount(_amountToSell);
+        }
         
         // get tokens from seller
         token.transferFrom(msg.sender, address(this), _amountToSell);
@@ -65,11 +76,9 @@ contract CustomShop {
         emit Sold(msg.sender, _amountToSell);
     }
 
-    /// @notice Withdraw funds from the contract
+    /// Withdraw funds from the contract
     function withdrawAll() external onlyOwner {
-        uint256 contractBalance = address(this).balance;
-
-        (bool success, ) = owner.call{value: contractBalance}("");
-        require(success, "Failed to withdraw");
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        require(success, "Failed to withdraw!");
     }
 }

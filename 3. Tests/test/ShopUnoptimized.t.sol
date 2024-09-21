@@ -5,10 +5,10 @@ pragma solidity ^0.8.26;
 import { Test, console } from "../lib/forge-std/src/Test.sol";
 
 import { IERC20 } from "../src/IERC20.sol";
-import { CustomShop } from "../src/CustomShop.sol";
+import { CustomShopUnoptimized } from "../src/CustomShopUnoptimized.sol";
 
 contract ShopTest is Test {
-    CustomShop public shop;
+    CustomShopUnoptimized public shop;
     IERC20 public erc20;
 
     event Bought(address indexed buyer, uint256 amount);
@@ -16,12 +16,8 @@ contract ShopTest is Test {
     receive() external payable {}
 
     function setUp() public {
-        shop = new CustomShop();
+        shop = new CustomShopUnoptimized();
         erc20 = IERC20(shop.token());
-
-        // console.log("Shop address: ", address(shop));
-        // console.log("Test address: ", address(this));
-        // console.log("Token address: ", address(shop.token()));
     }
 
     function test_ShopOwnerAddress() public view {
@@ -71,7 +67,7 @@ contract ShopTest is Test {
 
     function test_SellWrongAmount() public {
         // trying to sell 100 tokens having 0
-        vm.expectRevert("not enough tokens");
+        vm.expectRevert("Incorrect amount!");
         shop.sell(100);
     }
 
