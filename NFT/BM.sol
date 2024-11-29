@@ -30,7 +30,7 @@ contract BMortis is ERC721, Ownable {
 
     constructor() ERC721("Beauty Mortis", "BMORT") Ownable(msg.sender) {
         // mint first 11 tokens to onwer
-        for (uint i = 1; i <= premint; ++i) {
+        for (uint256 i = 1; i <= premint; ++i) {
             _safeMint(msg.sender, i);
 
             _tokensMinted.increment();
@@ -47,14 +47,14 @@ contract BMortis is ERC721, Ownable {
 
     modifier mintRequirements() {
         require(tokensMinted() + 1 <= maxSupply, NoTokensToMintAvailable());
-        require(availableToMint() > 0, NoTokensToMintAvailable()); 
+        require(availableToMint() > 0, NoTokensToMintAvailable());
         require(tx.origin == msg.sender, MintThroughContractUnavailable());
         _;
     }
 
     function mint() public payable mintRequirements {
         require(msg.value >= price, InsufficientFunds());
-      
+
         uint256 tokenId = nextRandomToken();
 
         _safeMint(msg.sender, tokenId);
@@ -64,7 +64,7 @@ contract BMortis is ERC721, Ownable {
         emit Minted(msg.sender, tokenId);
     }
 
-    function mintToAddress(address to) public onlyOwner mintRequirements {      
+    function mintToAddress(address to) public onlyOwner mintRequirements {
         uint256 tokenId = nextRandomToken();
 
         _safeMint(to, tokenId);
@@ -73,16 +73,16 @@ contract BMortis is ERC721, Ownable {
 
         emit Minted(to, tokenId);
     }
-    
+
     function setPrice(uint256 newPrice) public onlyOwner {
         price = newPrice;
     }
-  
-    function withdraw() public payable onlyOwner {
-        (bool sent, ) = owner().call{value: address(this).balance}("");
 
-        if (!sent) { 
-            revert WithdrawalFailed(); 
+    function withdraw() public payable onlyOwner {
+        (bool sent,) = owner().call{value: address(this).balance}("");
+
+        if (!sent) {
+            revert WithdrawalFailed();
         }
     }
 
@@ -94,13 +94,7 @@ contract BMortis is ERC721, Ownable {
         return maxSupply - tokensMinted();
     }
 
-    function tokenURI(uint256 tokenId)
-      public
-      view
-      virtual
-      override
-      returns (string memory)
-    {
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         string memory currentBaseURI = _baseURI();
 
         return bytes(currentBaseURI).length > 0
@@ -122,15 +116,9 @@ contract BMortis is ERC721, Ownable {
 
     function nextRandomToken() private ensureAvailability returns (uint256) {
         uint256 maxIndex = maxSupply - tokensMinted();
-        uint256 random = uint256(keccak256(
-            abi.encodePacked(
-                msg.sender,
-                block.coinbase,
-                block.prevrandao,
-                block.gaslimit,
-                block.timestamp
-            )
-        )) % maxIndex;
+        uint256 random = uint256(
+            keccak256(abi.encodePacked(msg.sender, block.coinbase, block.prevrandao, block.gaslimit, block.timestamp))
+        ) % maxIndex;
 
         uint256 value = 0;
 

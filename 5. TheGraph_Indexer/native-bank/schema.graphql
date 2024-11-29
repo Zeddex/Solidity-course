@@ -1,0 +1,20 @@
+type Deposit @entity(immutable: true) {
+  id: Bytes!
+  user: User!
+  amount: BigInt!
+  transactionHash: Bytes!
+}
+
+type Withdrawal @entity(immutable: true) {
+  id: Bytes!
+  user: User!
+  amount: BigInt!
+  transactionHash: Bytes!
+}
+
+type User @entity {
+  id: Bytes!
+  balance: BigInt!
+  deposits: [Deposit!]! @derivedFrom(field: "user")
+  withdrawals: [Withdrawal!]! @derivedFrom(field: "user")
+}

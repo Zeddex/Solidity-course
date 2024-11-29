@@ -1,0 +1,30 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: NativeBank
+    network: sepolia
+    source:
+      address: "0x595ee3e1b41337Ea4137261c86bc8B1B3245D813"
+      abi: NativeBank
+      startBlock: 6352537
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Deposit
+        - Withdrawal
+        - User
+      abis:
+        - name: NativeBank
+          file: ./abis/NativeBank.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256)
+          handler: handleDeposit
+        - event: Withdrawal(indexed address,uint256)
+          handler: handleWithdrawal
+      file: ./src/native-bank.ts

@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "NativeBank": {
+      "address": "0x595ee3e1b41337Ea4137261c86bc8B1B3245D813",
+      "startBlock": 6352537
+    }
+  }
+}
