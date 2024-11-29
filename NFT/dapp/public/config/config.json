@@ -1,0 +1,18 @@
+{
+  "CONTRACT_ADDRESS": "0xF57f7E8182C6c6a8C9414772fe773aA807de167F",
+  "SCAN_LINK": "https://polygonscan.com/token/0xf57f7e8182c6c6a8c9414772fe773aa807de167f",
+  "NETWORK": {
+    "NAME": "Polygon",
+    "SYMBOL": "MATIC",
+    "ID": 137
+  },
+  "NFT_NAME": "Beauty Mortis",
+  "SYMBOL": "BMORT",
+  "MAX_SUPPLY": 666,
+  "WEI_COST": 20000000000000000000,
+  "DISPLAY_COST": 20,
+  "GAS_LIMIT": 285000,
+  "MARKETPLACE": "Opeansea",
+  "MARKETPLACE_LINK": "https://opensea.io/collection/beauty-mortis",
+  "SHOW_BACKGROUND": true
+}
