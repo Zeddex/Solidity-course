@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.26;
+pragma solidity ^0.8.26;
 
 /**
  * @title INativeBank
@@ -14,7 +14,7 @@ interface INativeBank {
      * @param balance Текущий баланс аккаунта.
      */
     error WithdrawalAmountExceedsBalance(address account, uint256 amount, uint256 balance);
-    
+
     /**
      * @dev Генерируется, когда пытаются снять нулевую сумму.
      * @param account Адрес аккаунта, который пытался снять средства.
@@ -39,13 +39,13 @@ interface INativeBank {
      * @param account Адрес счёта.
      * @return Баланс счёта.
      */
-    function balanceOf(address account) external view returns(uint256);
+    function balanceOf(address account) external view returns (uint256);
 
     /**
      * @dev Вносит средства на счёт.
      */
     function deposit() external payable;
-    
+
     /**
      * @dev Снимает средства со счёта.
      * @param amount Сумма, которую нужно снять.
@@ -54,5 +54,5 @@ interface INativeBank {
 }
 
 contract Bank is IBank {
-    // Ваш код тут...
+// Ваш код тут...
 }

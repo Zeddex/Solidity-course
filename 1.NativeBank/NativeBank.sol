@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
-import "./IBank.sol";
+import "./INativeBank.sol";
 
 contract NativeBank is IBank {
-
     address public owner;
-    mapping(address account => uint balance) private _balances;
+    mapping(address account => uint256 balance) private _balances;
 
     constructor() {
         owner = msg.sender;
     }
 
-    receive() external payable { }
+    receive() external payable {}
 
     fallback() external payable {
         this.deposit();
@@ -23,7 +22,7 @@ contract NativeBank is IBank {
         _;
     }
 
-    function balanceOf(address _account) external view returns(uint256) {
+    function balanceOf(address _account) external view returns (uint256) {
         return _balances[_account];
     }
 
@@ -32,19 +31,15 @@ contract NativeBank is IBank {
 
         emit Deposit(msg.sender, msg.value);
     }
-    
+
     function withdraw(uint256 _amount) external {
         if (_amount == 0) {
             revert WithdrawalAmountZero(msg.sender);
         }
         if (_amount > _balances[msg.sender]) {
-            revert WithdrawalAmountExceedsBalance({
-            account: msg.sender, 
-            amount: _amount, 
-            balance: _balances[msg.sender]
-            });
+            revert WithdrawalAmountExceedsBalance({account: msg.sender, amount: _amount, balance: _balances[msg.sender]});
         }
-        
+
         unchecked {
             _balances[msg.sender] -= _amount;
         }
@@ -55,11 +50,10 @@ contract NativeBank is IBank {
         emit Withdrawal(msg.sender, _amount);
     }
 
-    function withdrawAll() external onlyOwner{
-        uint256 contractBalane = address(this).balance;
+    function withdrawAll() external onlyOwner {
+        uint256 contractBalance = address(this).balance;
 
-        (bool success,) = owner.call{value: contractBalane}("");
+        (bool success,) = owner.call{value: contractBalance}("");
         require(success, "Failed to send Ether");
     }
-
 }
