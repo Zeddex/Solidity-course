@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "../node_modules/@openzeppelin/contracts/utils/Strings.sol";
-import "./Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 event Minted(address owner, uint256 tokenId);
 
@@ -12,6 +11,34 @@ error InsufficientFunds();
 error WithdrawalFailed();
 error NoTokensToMintAvailable();
 error MintThroughContractUnavailable();
+
+library Counters {
+    struct Counter {
+        uint256 _value;
+    }
+
+    function current(Counter storage counter) internal view returns (uint256) {
+        return counter._value;
+    }
+
+    function increment(Counter storage counter) internal {
+        unchecked {
+            counter._value += 1;
+        }
+    }
+
+    function decrement(Counter storage counter) internal {
+        uint256 value = counter._value;
+        require(value > 0, "Counter: decrement overflow");
+        unchecked {
+            counter._value = value - 1;
+        }
+    }
+
+    function reset(Counter storage counter) internal {
+        counter._value = 0;
+    }
+}
 
 contract BMortis is ERC721, Ownable {
     using Strings for uint256;
