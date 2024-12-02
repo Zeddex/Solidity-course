@@ -65,7 +65,7 @@ contract DiceGameTest is Test {
         // Mock fulfillment of random words
         uint256[] memory randomNumbers = new uint256[](1);
         uint8 simulateNumber = 3;
-        randomNumbers[0] = uint256(simulateNumber);
+        randomNumbers[0] = uint256(simulateNumber - 1); // real conctract gives numbers from 0, mocked from 1
         mockRandomizer.mockFulfillRandomWords(requestId, randomNumbers); // Fulfill the mock request
 
         diceGame.processBet(requestId);
@@ -91,8 +91,8 @@ contract DiceGameTest is Test {
         uint256 requestId = mockRandomizer.currentRequestId();
 
         uint256[] memory randomNumbers = new uint256[](1);
-        uint8 simulateNumber = 1;
-        randomNumbers[0] = uint256(simulateNumber);
+        uint8 simulateNumber = 6;
+        randomNumbers[0] = uint256(simulateNumber - 1); // real conctract gives numbers from 0, mocked from 1
         mockRandomizer.mockFulfillRandomWords(requestId, randomNumbers);
 
         diceGame.processBet(requestId);

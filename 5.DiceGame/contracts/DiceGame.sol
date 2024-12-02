@@ -50,7 +50,7 @@ contract DiceGame {
         require(exists, "Random number not available");
 
         // Random number between 1 and 6
-        uint8 randomNumber = uint8((randomWords[0] % 6));
+        uint8 randomNumber = uint8((randomWords[0] % 6) + 1);
         bool won = (randomNumber == bet.guessedNumber);
 
         if (won) {

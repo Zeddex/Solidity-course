@@ -15,7 +15,7 @@ event BetResult(address indexed player, bool won, uint256 payout, uint8 randomNu
 
 contract DiceGame {
     address public owner;
-    address private randomizer = 0xB5f954C9a37b59796dD59A693323e438f9c8cBAA;
+    address private randomizer;
 
     struct Bet {
         address player;
@@ -24,10 +24,6 @@ contract DiceGame {
     }
 
     mapping(uint256 requestId => Bet) public bets;
-
-    // constructor() {
-    //     owner = msg.sender;
-    // }
 
     constructor(address _randomizer) {
         owner = msg.sender;
@@ -60,7 +56,7 @@ contract DiceGame {
         require(exists, "Random number not available");
 
         // Random number between 1 and 6
-        uint8 randomNumber = uint8((randomWords[0] % 6));
+        uint8 randomNumber = uint8((randomWords[0] % 6) + 1);
         bool won = (randomNumber == bet.guessedNumber);
 
         if (won) {
