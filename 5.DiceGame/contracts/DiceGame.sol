@@ -18,7 +18,7 @@ contract DiceGame {
         uint8 guessedNumber;
     }
 
-    mapping(uint256 requestId => Bet) public bets;
+    mapping(uint256 betId => Bet) public bets;
 
     constructor() {
         owner = msg.sender;
@@ -29,24 +29,24 @@ contract DiceGame {
         _;
     }
 
-    function placeBet(uint8 guessedNumber) external payable {
+    function placeBet(uint8 guessedNumber) external payable returns (uint256 betId) {
         require(guessedNumber >= 1 && guessedNumber <= 6, "Invalid number");
         require(msg.value > 0, "Wrong amount");
         require(msg.value * 2 <= address(this).balance, "Cannot cover the bet");
 
-        uint256 requestId = random.requestRandomWords();
+        betId = random.requestRandomWords();
 
-        bets[requestId] = Bet({player: msg.sender, amount: msg.value, guessedNumber: guessedNumber});
+        bets[betId] = Bet({player: msg.sender, amount: msg.value, guessedNumber: guessedNumber});
 
         emit BetPlaced(msg.sender, msg.value, guessedNumber);
     }
 
-    function processBet(uint256 requestId) external {
-        Bet memory bet = bets[requestId];
+    function processBet(uint256 betId) external {
+        Bet memory bet = bets[betId];
         require(bet.amount > 0, "Bet not found");
 
         // Get the random number
-        (bool exists, uint256[] memory randomWords) = random.getRequestStatus(requestId);
+        (bool exists, uint256[] memory randomWords) = random.getRequestStatus(betId);
         require(exists, "Random number not available");
 
         // Random number between 1 and 6
@@ -65,7 +65,7 @@ contract DiceGame {
         }
 
         // Clean up bet data
-        delete bets[requestId];
+        delete bets[betId];
     }
 
     function withdraw() external onlyOwner {
