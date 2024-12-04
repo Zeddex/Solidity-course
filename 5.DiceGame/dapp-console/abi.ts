@@ -59,21 +59,13 @@ export const dicegameAbi = [
         },
         {
             inputs: [
-                {
-                    internalType: "uint256",
-                    name: "requestId",
-                    type: "uint256",
-                },
+                { internalType: "uint256", name: "requestId", type: "uint256" },
             ],
             name: "bets",
             outputs: [
                 { internalType: "address", name: "player", type: "address" },
                 { internalType: "uint256", name: "amount", type: "uint256" },
-                {
-                    internalType: "uint8",
-                    name: "guessedNumber",
-                    type: "uint8",
-                },
+                { internalType: "uint8", name: "guessedNumber", type: "uint8" },
             ],
             stateMutability: "view",
             type: "function",
@@ -94,24 +86,18 @@ export const dicegameAbi = [
         },
         {
             inputs: [
-                {
-                    internalType: "uint8",
-                    name: "guessedNumber",
-                    type: "uint8",
-                },
+                { internalType: "uint8", name: "guessedNumber", type: "uint8" },
             ],
             name: "placeBet",
-            outputs: [],
+            outputs: [
+                { internalType: "uint256", name: "betId", type: "uint256" },
+            ],
             stateMutability: "payable",
             type: "function",
         },
         {
             inputs: [
-                {
-                    internalType: "uint256",
-                    name: "requestId",
-                    type: "uint256",
-                },
+                { internalType: "uint256", name: "betId", type: "uint256" },
             ],
             name: "processBet",
             outputs: [],
