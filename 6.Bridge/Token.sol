@@ -6,8 +6,8 @@ import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC2
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CatToken is ERC20, ERC20Burnable, Ownable {
-    constructor(uint256 initialSupply) ERC20("CatToken", "CAT") Ownable(msg.sender) {
-        _mint(msg.sender, initialSupply * 10 ** decimals());
+    constructor() ERC20("CatToken", "CAT") Ownable(msg.sender) {
+        _mint(msg.sender, 10000 ether);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
