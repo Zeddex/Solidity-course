@@ -21,13 +21,7 @@ contract BridgeTest is Test {
         token.transferOwnership(address(bridge));
         vm.stopPrank();
 
-        console.log("token address: ", address(token));
-        console.log("token owner: ", token.owner());
-        console.log("bridge address: ", address(bridge));
-        console.log("bridge owner: ", bridge.owner());
-        console.log("this address: ", address(this));
-
-        // Allocate tokens to "user"
+        // Allocate tokens to user
         token.transfer(user, userStartBalance);
     }
 
