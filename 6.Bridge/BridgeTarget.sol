@@ -3,7 +3,7 @@ pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import {CatToken} from "./Token.sol";
+import {WrappedCatToken} from "./WrappedToken.sol";
 
 event TokensLocked(address indexed user, uint256 amount, string targetChain);
 
@@ -40,7 +40,7 @@ contract Bridge is Ownable {
     function mintTokens(address user, uint256 amount) external onlyOwner {
         require(amount > 0, "Amount must be greater than 0");
 
-        CatToken(address(token)).mint(user, amount);
+        WrappedCatToken(address(token)).mint(user, amount);
 
         emit TokensMinted(user, amount);
     }
@@ -51,9 +51,9 @@ contract Bridge is Ownable {
      */
     function burnTokens(uint256 amount, string memory sourceChain) external {
         require(amount > 0, "Amount must be greater than 0");
-        require(CatToken(address(token)).balanceOf(msg.sender) >= amount, "Insufficient wrapped token balance");
+        require(WrappedCatToken(address(token)).balanceOf(msg.sender) >= amount, "Insufficient wrapped token balance");
 
-        CatToken(address(token)).burnFrom(msg.sender, amount);
+        WrappedCatToken(address(token)).burnFrom(msg.sender, amount);
 
         emit TokensBurned(msg.sender, amount, sourceChain);
     }

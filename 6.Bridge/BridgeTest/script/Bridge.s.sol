@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.22;
 
 import {Script, console} from "forge-std/Script.sol";
 import {Bridge} from "../src/Bridge.sol";
@@ -10,10 +10,8 @@ contract CounterScript is Script {
     function setUp() public {}
 
     function run() public {
-        vm.startBroadcast();
+        // vm.startBroadcast();
 
-        //Bridge = new Bridge();
-
-        vm.stopBroadcast();
+        // vm.stopBroadcast();
     }
 }

@@ -5,20 +5,30 @@ import {Test, console} from "forge-std/Test.sol";
 import {Bridge} from "../src/Bridge.sol";
 import {CatToken} from "../src/Token.sol";
 
-contract CounterTest is Test {
+contract BridgeTest is Test {
     Bridge bridge;
     CatToken token;
 
-    address owner = makeAddr("owner");
     address user = makeAddr("user");
+    uint256 userStartBalance = 100 ether;
 
     function setUp() public {
         token = new CatToken();
         bridge = new Bridge(address(token));
 
-        // Allocate tokens to "alice"
-        vm.prank(owner);
-        token.transfer(user, 100 ether); // Transfer tokens to user
+        // Transfer ownership of the token contract to the bridge contract
+        vm.startPrank(token.owner());
+        token.transferOwnership(address(bridge));
+        vm.stopPrank();
+
+        console.log("token address: ", address(token));
+        console.log("token owner: ", token.owner());
+        console.log("bridge address: ", address(bridge));
+        console.log("bridge owner: ", bridge.owner());
+        console.log("this address: ", address(this));
+
+        // Allocate tokens to "user"
+        token.transfer(user, userStartBalance);
     }
 
     function testLockTokens() public {
@@ -38,15 +48,11 @@ contract CounterTest is Test {
     }
 
     function testMintTokens() public {
-        vm.startPrank(owner);
-
         // Mint tokens on the target chain
         bridge.mintTokens(user, 30 ether);
 
         // Check receiver balance
-        assertEq(token.balanceOf(user), 30 ether, "Receiver should have 30 minted tokens");
-
-        vm.stopPrank();
+        assertEq(token.balanceOf(user), userStartBalance + 30 ether, "Receiver should have 30 minted tokens");
     }
 
     function testBurnTokens() public {
@@ -62,14 +68,21 @@ contract CounterTest is Test {
     }
 
     function testReleaseTokens() public {
-        vm.startPrank(owner);
+        // Lock tokens to release them after
+        vm.startPrank(user);
+
+        // Approve Bridge to spend user tokens
+        token.approve(address(bridge), 50 ether);
+
+        // Lock tokens on the bridge
+        bridge.lockTokens(50 ether, "Polygon");
+
+        vm.stopPrank();
 
         // Release tokens back to the user
         bridge.releaseTokens(user, 50 ether);
 
         // Check balances
-        assertEq(token.balanceOf(user), 150 ether, "User should have received released tokens");
-
-        vm.stopPrank();
+        assertEq(token.balanceOf(user), userStartBalance, "User should have received released tokens");
     }
 }

@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {CatToken} from "./Token.sol";
 
-event TokensLocked(address indexed user, uint256 amount, string targetChain, address receiver);
+event TokensLocked(address indexed user, uint256 amount, string targetChain);
 
 event TokensReleased(address indexed user, uint256 amount);
 
 event TokensMinted(address indexed user, uint256 amount);
 
-event TokensBurned(address indexed user, uint256 amount, string sourceChain, address receiver);
+event TokensBurned(address indexed user, uint256 amount, string sourceChain);
 
 contract Bridge is Ownable {
     IERC20 public token;
@@ -29,20 +29,7 @@ contract Bridge is Ownable {
 
         token.transferFrom(msg.sender, address(this), amount);
 
-        emit TokensLocked(msg.sender, amount, targetChain, msg.sender);
-    }
-
-    /**
-     * @dev Release tokens on the source chain
-     * Callable only by the bridge owner
-     * Emits TokensReleased event
-     */
-    function releaseTokens(address user, uint256 amount) external onlyOwner {
-        require(amount > 0, "Amount must be greater than 0");
-
-        token.transfer(user, amount);
-
-        emit TokensReleased(user, amount);
+        emit TokensLocked(msg.sender, amount, targetChain);
     }
 
     /**
@@ -67,6 +54,19 @@ contract Bridge is Ownable {
 
         CatToken(address(token)).burnFrom(msg.sender, amount);
 
-        emit TokensBurned(msg.sender, amount, sourceChain, msg.sender);
+        emit TokensBurned(msg.sender, amount, sourceChain);
+    }
+
+    /**
+     * @dev Release tokens on the source chain
+     * Callable only by the bridge owner
+     * Emits TokensReleased event
+     */
+    function releaseTokens(address user, uint256 amount) external onlyOwner {
+        require(amount > 0, "Amount must be greater than 0");
+
+        token.transfer(user, amount);
+
+        emit TokensReleased(user, amount);
     }
 }
