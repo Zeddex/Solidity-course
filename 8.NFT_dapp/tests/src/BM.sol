@@ -5,13 +5,6 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-event Minted(address owner, uint256 tokenId);
-
-error InsufficientFunds();
-error WithdrawalFailed();
-error NoTokensToMintAvailable();
-error MintThroughContractUnavailable();
-
 library Counters {
     struct Counter {
         uint256 _value;
@@ -55,9 +48,21 @@ contract BMortis is ERC721, Ownable {
     uint256 private constant premint = 11;
     uint256 private startRndCount = premint + 1;
 
+    event Minted(address indexed owner, uint256 tokenId);
+
+    error InsufficientFunds();
+    error WithdrawalFailed();
+    error NoTokensToMintAvailable();
+    error MintThroughContractUnavailable();
+    error InvalidAddress();
+    error ZeroBalance();
+
     constructor() ERC721("Beauty Mortis", "BMORT") Ownable(msg.sender) {
         // mint first 11 tokens to onwer
-        for (uint256 i = 1; i <= premint; ++i) {
+
+        uint256 premintAmount = premint;
+
+        for (uint256 i = 1; i <= premintAmount; i++) {
             _safeMint(msg.sender, i);
 
             _tokensMinted.increment();
@@ -79,8 +84,11 @@ contract BMortis is ERC721, Ownable {
         _;
     }
 
-    function mint() public payable mintRequirements {
+    function mint() external payable mintRequirements {
         require(msg.value >= price, InsufficientFunds());
+        if (tx.origin != msg.sender) {
+            revert MintThroughContractUnavailable();
+        }
 
         uint256 tokenId = nextRandomToken();
 
@@ -91,7 +99,7 @@ contract BMortis is ERC721, Ownable {
         emit Minted(msg.sender, tokenId);
     }
 
-    function mintToAddress(address to) public onlyOwner mintRequirements {
+    function mintToAddress(address to) external onlyOwner mintRequirements {
         uint256 tokenId = nextRandomToken();
 
         _safeMint(to, tokenId);
@@ -101,19 +109,31 @@ contract BMortis is ERC721, Ownable {
         emit Minted(to, tokenId);
     }
 
-    function setPrice(uint256 newPrice) public onlyOwner {
+    function setPrice(uint256 newPrice) external onlyOwner {
         price = newPrice;
     }
 
-    function withdraw() public payable onlyOwner {
-        (bool sent,) = owner().call{value: address(this).balance}("");
+    function withdraw() external payable onlyOwner {
+        address recipient = owner();
+
+        if (recipient == address(0)) {
+            revert InvalidAddress();
+        }
+
+        uint256 balance = address(this).balance;
+
+        if (balance == 0) {
+            revert ZeroBalance();
+        }
+
+        (bool sent,) = recipient.call{value: balance}("");
 
         if (!sent) {
             revert WithdrawalFailed();
         }
     }
 
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return _currentSupply.current();
     }
 
@@ -121,15 +141,13 @@ contract BMortis is ERC721, Ownable {
         return maxSupply - tokensMinted();
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    function tokenURI(uint256 tokenId) public pure override returns (string memory) {
         string memory currentBaseURI = _baseURI();
 
-        return bytes(currentBaseURI).length > 0
-            ? string(abi.encodePacked(currentBaseURI, tokenId.toString(), ".json"))
-            : "";
+        return bytes(currentBaseURI).length > 0 ? string.concat(currentBaseURI, tokenId.toString(), ".json") : "";
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal pure override returns (string memory) {
         return baseURI;
     }
 
