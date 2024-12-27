@@ -33,7 +33,7 @@ library Counters {
     }
 }
 
-contract BMortis is ERC721, Ownable {
+contract BmNft is ERC721, Ownable {
     using Strings for uint256;
     using Counters for Counters.Counter;
 
@@ -86,12 +86,8 @@ contract BMortis is ERC721, Ownable {
 
     function mint() external payable mintRequirements {
         require(msg.value >= price, InsufficientFunds());
-        if (tx.origin != msg.sender) {
-            revert MintThroughContractUnavailable();
-        }
 
         uint256 tokenId = nextRandomToken();
-
         _safeMint(msg.sender, tokenId);
 
         currentSupplyIncrement();
