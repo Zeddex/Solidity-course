@@ -107,16 +107,20 @@ contract BM_Test is Test {
         vm.stopPrank();
     }
 
+    // Test Random Token Generation
+
     function testNextRandomTokenUniqueness() public {
         uint256 price = nft.price();
         vm.deal(user, price * 10); // Fund user with enough Ether for multiple mints
-        vm.startPrank(user);
+
+        vm.startBroadcast(user);
 
         uint256 tokensToMint = 10;
         for (uint256 i = 0; i < tokensToMint; i++) {
             nft.mint{value: price}();
         }
-        vm.stopPrank();
+
+        vm.stopBroadcast();
 
         // Verify all token IDs are unique
         uint256[] memory ownedTokens = new uint256[](tokensToMint);
@@ -138,12 +142,14 @@ contract BM_Test is Test {
         uint256 price = nft.price();
         uint256 maxMintable = nft.availableToMint();
         vm.deal(user, price * maxMintable);
-        vm.startPrank(user);
+
+        vm.startBroadcast(user);
 
         for (uint256 i = 0; i < maxMintable; i++) {
             nft.mint{value: price}();
         }
-        vm.stopPrank();
+
+        vm.stopBroadcast();
 
         // Verify that total supply equals maxSupply
         assertEq(nft.totalSupply(), 666, "Total supply should equal max supply after full minting");
@@ -153,14 +159,16 @@ contract BM_Test is Test {
         uint256 price = nft.price();
         uint256 tokensToMint = 50;
         vm.deal(user, price * tokensToMint);
-        vm.startPrank(user);
+
+        vm.startBroadcast(user);
 
         uint256[] memory tokenIds = new uint256[](tokensToMint);
         for (uint256 i = 0; i < tokensToMint; i++) {
             nft.mint{value: price}();
             tokenIds[i] = nft.totalSupply(); // Capture minted token IDs
         }
-        vm.stopPrank();
+
+        vm.stopBroadcast();
 
         // Analyze distribution of token IDs
         uint256 minTokenId = type(uint256).max;
@@ -177,14 +185,19 @@ contract BM_Test is Test {
     function testNextRandomTokenRevertsWhenSoldOut() public {
         uint256 price = nft.price();
         uint256 maxMintable = nft.availableToMint();
-        vm.deal(user, price * maxMintable);
-        vm.startPrank(user);
+        vm.deal(user, 100500 ether);
+
+        vm.startBroadcast(user);
 
         for (uint256 i = 0; i < maxMintable; i++) {
             nft.mint{value: price}();
         }
+
+        console.log("Max mintable: ", maxMintable);
+
         vm.expectRevert(BmNft.NoTokensToMintAvailable.selector);
         nft.mint{value: price}(); // This should revert as all tokens are minted
-        vm.stopPrank();
+
+        vm.stopBroadcast();
     }
 }
