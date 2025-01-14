@@ -20,7 +20,7 @@ abstract contract ERC20 is IERC20 {
         decimals = _decimals;
     }
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, "not an owner!");
         _;
     }
@@ -32,11 +32,7 @@ abstract contract ERC20 is IERC20 {
         return _transfer(msg.sender, to, amount);
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool) {
+    function transferFrom(address from, address to, uint256 amount) external returns (bool) {
         uint256 allowed = allowance[from][msg.sender];
 
         require(amount <= balanceOf[from]);
@@ -44,7 +40,7 @@ abstract contract ERC20 is IERC20 {
         require(to != address(0));
 
         allowance[from][msg.sender] = allowed - amount;
-            
+
         return _transfer(from, to, amount);
     }
 
@@ -59,10 +55,8 @@ abstract contract ERC20 is IERC20 {
     }
 
     function _transfer(address from, address to, uint256 amount) internal returns (bool) {
-        uint256 balance = balanceOf[from];
-
         unchecked {
-            balanceOf[from] -= balance;
+            balanceOf[from] -= amount;
         }
 
         balanceOf[to] += amount;
